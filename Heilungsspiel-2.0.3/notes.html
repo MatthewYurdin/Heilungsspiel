@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+    //return results[2];
+}
+var qs = getParameterByName('ns');
+var qqs = "<text>YOUR SONG (each line is 10 seconds long)<br><br>";
+for (var i=0;i<qs.length;i++){
+  if (qs.charAt(i)=="1") {
+	qqs += "#";
+  } else if (qs.charAt(i)=="2") {
+ 	qqs += "?";
+  } else if (qs.charAt(i)=="3") {
+  	qqs += "_";
+  } else {
+  	qqs += qs.charAt(i);
+  }
+}
+qqs += "</text>"
+console.log(qqs);
+if (qs !== '') {
+	document.write(qqs);
+} else {
+	document.write("Oops! No notes have been played yet.")
+}
+</script>
+</head>
+<body>
+</body>
+</html>

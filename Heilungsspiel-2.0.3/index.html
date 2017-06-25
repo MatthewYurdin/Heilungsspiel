@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body {background-color: white;}
+	</style>
+</head>
+<body>
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:html="http://www.w3.org/1999/xhtml" width="100%" height="100%" viewBox="0,0,1000,740" preserveAspectRatio="xMinYMin meet">
+      <defs>
+	    <script type="text/javascript">
+        // <![CDATA[
+
+//Globals
+var tracker=[], firstTime = 0, oggYes, mp3Yes, ext;
+//Keep record of what note played and when
+function trackNotes(n) {  
+  var t, tlen, prevt, t_, elap; 
+  t=Date.now();
+  tlen=tracker.length;
+  if (tlen===0) {
+    firstTime = t;
+    t_ = t;
+    elap=0;
+    tracker.push([n,t,elap]);
+  } else {
+     t_ = t-firstTime;
+     elap=(t_ + tracker[(tracker.length-1)][2])/1000;
+     tracker.push([n,t_,elap]);
+  }
+   //if (tracker.length==1) {
+   //	 var link = document.getElementById("display-playing");
+   //  link.addEventListener('click', function(event) {
+      // Stop the link from redirecting
+   //   event.preventDefault();
+   //  }
+   //}
+}
+function clearRecord(){
+	tracker = [];
+}
+//Does browser support OGG or MP3?
+function mp3Support(){
+  var a = document.createElement('audio');
+  return !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
+}
+function oggSupport(){
+  var a = document.createElement('audio');
+  return !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+}
+//Select ogg or mp3
+oggYes = oggSupport();
+mp3Yes = mp3Support();
+if (oggYes && mp3Yes) {
+	ext = 'ogg';
+} else if (mp3Yes) {
+	ext = 'mp3';
+} else {
+	ext = 'ogg';
+}
+//Play the note struck
+function playFile(note) {
+  var url = ext + "/sound-" + note + "." + ext + "?cb=" + new Date().getTime();
+  var audio = new Audio(url);
+  audio.load();
+  audio.play();        
+}
+//Display all the notes played
+function symbolIt(t){
+	if (t.length==2) return t[0].toUpperCase();
+	else if (t.length==3) return (t[0].toUpperCase() + '1');
+	else return '2'; 
+}
+function cleanUpNote(note,spaces){
+    var noteText = '';
+	for (var i=0;i<spaces;i++){
+		noteText += '3';
+	}
+	noteText += symbolIt(note);
+	return noteText;
+}
+function displayNotesPlayed() {
+  var txt='', note, spaces, rowBegin, qs, date = new Date(firstTime);
+  for (var i = 0; i < tracker.length; i++) { 
+    note = tracker[i][0];
+    if (i===0) {
+      rowBegin = 0;
+      spaces = 0;
+      txt += '<br>' + cleanUpNote(note,spaces);    
+    } else if ((tracker[i][2]-rowBegin)>=10.0000) {
+    	rowBegin = tracker[i][2];
+    	spaces=0;
+    	txt += '<br>' + cleanUpNote(note,spaces);
+    } else {
+        if ((tracker[i][2]-tracker[i-1][2])<0.3333) {
+        	spaces = 0;
+        } else {
+        	spaces = Math.floor((tracker[i][2]-tracker[i-1][2]));
+        	if(spaces>6) spaces=6;
+        	if(spaces<1) spaces=1;
+        }
+        txt += cleanUpNote(note,spaces);
+    }
+  }
+  qs = "?ns=" + txt;
+  var link = document.getElementById("display-playing");
+  link.setAttribute('href', 'notes.html'+qs);
+  link.click();
+}
+      // ]]>	        
+      </script>
+	      <g id="key-1">
+	          <circle cx="0" cy="0" r="20" style="stroke:#3399ff; stroke-width: 0; fill:#3399ff"/>
+	      </g>
+	  	</defs>
+		<rect x="115" y="0" width="730" height="90" fill="#ffffff" />
+		<rect x="115" y="100" width="730" height="400"  fill="#e0e0e0" rx="15" ry="15" />
+		<rect x="115" y="510" width="730" height="200" fill="#ffffff" />
+	    <g id="big-brain" stroke-width="10" transform="scale(0.30) translate(1400,1700)">
+			<circle class="cls-1" cx="283.85" cy="68.81" r="15" fill="#04ae64"/><circle class="cls-1" cx="166.72" cy="262.44" r="15" fill="#04ae64"/><path class="cls-2" fill="none" stroke="#04ae64" stroke-miterlimit="10" stroke-linecap="round" d="M236,165.23h42.23a23.9,23.9,0,1,0,0-47.81H236"/><path class="cls-2" fill="none" stroke="#04ae64" stroke-miterlimit="10" stroke-linecap="round" d="M236,262.44h42.23a23.9,23.9,0,1,0,0-47.81H236"/><line class="cls-3" stroke="#04ae64" stroke-miterlimit="10" x1="283.85" y1="68.81" x2="236.04" y2="68.81"/><path class="cls-2" fill="none" stroke="#04ae64" stroke-miterlimit="10" stroke-linecap="round" d="M213.73,68.81H165.52c-10,0-17.93,10.76-17.93,23.9s8,23.9,17.93,23.9h48.21"/><path class="cls-2" fill="none" stroke="#04ae64" stroke-miterlimit="10" stroke-linecap="round" d="M213.73,165.23H165.52c-10,0-17.93,10.76-17.93,23.9s8,23.9,17.93,23.9h48.21"/><line class="cls-3" stroke="#04ae64" stroke-miterlimit="10" x1="214.92" y1="262.44" x2="161.54" y2="262.44"/><path class="cls-4" fill="none" stroke="#999999" stroke-linejoin="round" stroke-linecap="round" d="M178.27,11A36.56,36.56,0,0,0,141.62,47.7h-.4a30.24,30.24,0,0,0-28.29,41,17.9,17.9,0,0,0-14.34,17.53,19,19,0,0,0,5.58,13.15,37.61,37.61,0,0,0-29.48,36.65,35.05,35.05,0,0,0,8,22.71A22.77,22.77,0,0,0,90.22,223a21.92,21.92,0,0,0-8.37,17.53,22.7,22.7,0,0,0,22.71,22.71A21.78,21.78,0,0,0,116.12,260a33.89,33.89,0,0,0-1.59,8.76,28.57,28.57,0,0,0,28.69,28.69,22.72,22.72,0,0,0,5.18-.4,34.48,34.48,0,0,0,32.67,23.51,34.06,34.06,0,0,0,33.86-29.88h.4V47.7A37.16,37.16,0,0,0,178.27,11Z"/><path class="cls-4" fill="none" stroke="#999999" stroke-linejoin="round" stroke-linecap="round" d="M272.69,11A36.56,36.56,0,0,1,309.35,47.7h.4a30.24,30.24,0,0,1,28.29,41,17.9,17.9,0,0,1,14.34,17.53,19,19,0,0,1-5.58,13.15,37.61,37.61,0,0,1,29.48,36.65,35.05,35.05,0,0,1-8,22.71A22.77,22.77,0,0,1,360.74,223a21.92,21.92,0,0,1,8.37,17.53,22.7,22.7,0,0,1-22.71,22.71A21.78,21.78,0,0,1,334.84,260a33.89,33.89,0,0,1,1.59,8.76,28.57,28.57,0,0,1-28.69,28.69,22.72,22.72,0,0,1-5.18-.4A34.48,34.48,0,0,1,269.9,320.6,34.06,34.06,0,0,1,236,290.72h-.4V47.7A37.16,37.16,0,0,1,272.69,11Z"/>
+		</g>	
+        <g id="project-title" transform="translate(0,2) translate(380,20)">
+	    	<path style="fill:#000000;stroke:none" d="m 20,0 160,0 c 11.08,0 20,8.92 20,20 l 0,10 c 0,11.08 -8.92,20 -20,20 L 20,50 C 8.92,50 0,41.08 0,30 L 0,20 C 0,8.92 8.92,0 20,0 Z" id="rect3388" />
+		    <g style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none" id="text3390">
+		      <path
+		         d="m 7.7617187,16.503906 2.3789063,0 0,6.703125 6.480469,0 0,-6.703125 2.378906,0 L 19,34 l -2.378906,0 0,-8.800781 -6.480469,0 0,8.800781 -2.3789063,0 0,-17.496094 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3460" />
+		      <path
+		         d="m 33.71875,26.359375 0,1.054687 -9.339844,0 0,0.07031 q -0.09375,2.683594 1.019531,3.855469 1.125,1.171875 3.164063,1.171875 1.03125,0 2.15625,-0.328125 1.125,-0.328125 2.402344,-0.996094 l 0,2.144531 q -1.230469,0.503906 -2.378907,0.75 -1.136718,0.257813 -2.203125,0.257813 -3.058593,0 -4.78125,-1.828125 -1.722656,-1.839844 -1.722656,-5.0625 0,-3.140625 1.6875,-5.015625 1.6875,-1.875 4.5,-1.875 2.507813,0 3.949219,1.699218 1.453125,1.699219 1.546875,4.101563 z M 31.5625,25.726562 q -0.140625,-1.359375 -0.996094,-2.34375 -0.84375,-0.996093 -2.4375,-0.996093 -1.558594,0 -2.566406,1.03125 -1.007813,1.03125 -1.101563,2.320312 l 7.101563,-0.01172 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3462" />
+		      <path
+		         d="m 38.734375,20.921875 5.519531,0 0,11.402344 4.277344,0 0,1.675781 -10.710938,0 0,-1.675781 4.277344,0 0,-9.726563 -3.363281,0 0,-1.675781 z m 3.363281,-5.097656 2.15625,0 0,2.71875 -2.15625,0 0,-2.71875 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3464" />
+		      <path
+		         d="m 57.894531,29.253906 q 0,1.453125 0.527344,2.191406 0.539062,0.738282 1.582031,0.738282 l 2.519531,0 0,1.816406 -2.730468,0 q -1.933594,0 -3,-1.230469 -1.054688,-1.242187 -1.054688,-3.515625 l 0,-11.871094 -3.457031,0 0,-1.687499 5.613281,0 0,13.558593 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3466" />
+		      <path
+		         d="m 66.191406,29.03125 0,-8.132813 2.15625,0 0,8.132813 q 0,1.769531 0.621094,2.601562 0.632812,0.832032 1.945312,0.832032 1.523438,0 2.332032,-1.066407 0.808593,-1.078125 0.808593,-3.082031 l 0,-7.417969 2.167969,0 0,13.101563 -2.167969,0 0,-1.96875 q -0.574218,1.136719 -1.570312,1.722656 -0.984375,0.585938 -2.308594,0.585938 -2.015625,0 -3,-1.3125 -0.984375,-1.324219 -0.984375,-3.996094 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3468" />
+		      <path
+		         d="m 90.660156,25.867187 0,8.132813 -2.167969,0 0,-8.132813 q 0,-1.769531 -0.621093,-2.601562 -0.621094,-0.832031 -1.945313,-0.832031 -1.511719,0 -2.332031,1.078125 -0.808594,1.066406 -0.808594,3.070312 l 0,7.417969 -2.15625,0 0,-13.125 2.15625,0 0,1.96875 q 0.574219,-1.125 1.558594,-1.699219 0.984375,-0.585937 2.332031,-0.585937 2.003906,0 2.988281,1.324218 0.996094,1.3125 0.996094,3.984375 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3470" />
+		      <path
+		         d="m 102.83594,27.332031 q 0,-2.425781 -0.79688,-3.679687 -0.78515,-1.265625 -2.296873,-1.265625 -1.582031,0 -2.414062,1.265625 -0.832031,1.253906 -0.832031,3.679687 0,2.425781 0.832031,3.703125 0.84375,1.265625 2.4375,1.265625 1.488285,0 2.273435,-1.277344 0.79688,-1.277343 0.79688,-3.691406 z m 2.15625,5.824219 q 0,2.953125 -1.39453,4.476562 -1.39453,1.523438 -4.101566,1.523438 -0.890625,0 -1.863282,-0.164063 -0.972656,-0.164062 -1.945312,-0.480468 l 0,-2.132813 q 1.148437,0.539063 2.085937,0.796875 0.9375,0.257813 1.722657,0.257813 1.746096,0 2.542966,-0.949219 0.79688,-0.949219 0.79688,-3.011719 l 0,-0.09375 0,-1.464844 q -0.51563,1.101563 -1.40625,1.640625 -0.89063,0.539063 -2.167971,0.539063 -2.296875,0 -3.667969,-1.839844 -1.371094,-1.839844 -1.371094,-4.921875 0,-3.09375 1.371094,-4.933594 1.371094,-1.839843 3.667969,-1.839843 1.265621,0 2.144531,0.503906 0.87891,0.503906 1.42969,1.558594 l 0,-1.699219 2.15625,0 0,12.234375 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3472" />
+		      <path
+		         d="m 118.62109,21.332031 0,2.109375 q -0.92578,-0.539062 -1.86328,-0.808594 -0.9375,-0.269531 -1.91015,-0.269531 -1.46485,0 -2.19141,0.480469 -0.71484,0.46875 -0.71484,1.441406 0,0.878906 0.53906,1.3125 0.53906,0.433594 2.68359,0.84375 l 0.86719,0.164063 q 1.60547,0.304687 2.42578,1.21875 0.83203,0.914062 0.83203,2.378906 0,1.945312 -1.38281,3.046875 -1.38281,1.089844 -3.84375,1.089844 -0.97266,0 -2.03906,-0.210938 -1.06641,-0.199219 -2.3086,-0.609375 l 0,-2.226562 q 1.20704,0.621093 2.3086,0.9375 1.10156,0.304687 2.08594,0.304687 1.42968,0 2.21484,-0.574219 0.78516,-0.585937 0.78516,-1.628906 0,-1.5 -2.8711,-2.074219 l -0.0937,-0.02344 -0.80859,-0.164063 q -1.86328,-0.363281 -2.71875,-1.21875 -0.85547,-0.867187 -0.85547,-2.355468 0,-1.886719 1.27734,-2.90625 1.27735,-1.03125 3.64453,-1.03125 1.05469,0 2.02735,0.199218 0.97265,0.1875 1.91015,0.574219 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3474" />
+		      <path
+		         d="m 133.05859,21.332031 0,2.109375 q -0.92578,-0.539062 -1.86328,-0.808594 -0.9375,-0.269531 -1.91015,-0.269531 -1.46485,0 -2.19141,0.480469 -0.71484,0.46875 -0.71484,1.441406 0,0.878906 0.53906,1.3125 0.53906,0.433594 2.68359,0.84375 l 0.86719,0.164063 q 1.60547,0.304687 2.42578,1.21875 0.83203,0.914062 0.83203,2.378906 0,1.945312 -1.38281,3.046875 -1.38281,1.089844 -3.84375,1.089844 -0.97266,0 -2.03906,-0.210938 -1.06641,-0.199219 -2.3086,-0.609375 l 0,-2.226562 q 1.20704,0.621093 2.3086,0.9375 1.10156,0.304687 2.08593,0.304687 1.42969,0 2.21485,-0.574219 0.78515,-0.585937 0.78515,-1.628906 0,-1.5 -2.87109,-2.074219 l -0.0937,-0.02344 -0.80859,-0.164063 q -1.86328,-0.363281 -2.71875,-1.21875 -0.85547,-0.867187 -0.85547,-2.355468 0,-1.886719 1.27734,-2.90625 1.27735,-1.03125 3.64453,-1.03125 1.05469,0 2.02735,0.199218 0.97265,0.1875 1.91015,0.574219 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3476" />
+		      <path
+		         d="m 140.48828,32.347656 0,6.644531 -2.16797,0 0,-18.117187 2.16797,0 0,1.675781 q 0.53906,-0.972656 1.42969,-1.476562 0.90234,-0.515625 2.07422,-0.515625 2.3789,0 3.72656,1.839843 1.35937,1.839844 1.35937,5.097657 0,3.199218 -1.35937,5.027343 -1.35938,1.816407 -3.72656,1.816407 -1.19532,0 -2.09766,-0.503907 -0.89062,-0.515625 -1.40625,-1.488281 z m 6.32813,-4.898437 q 0,-2.507813 -0.79688,-3.785157 -0.78516,-1.277343 -2.34375,-1.277343 -1.57031,0 -2.37891,1.289062 -0.80859,1.277344 -0.80859,3.773438 0,2.484375 0.80859,3.773437 0.8086,1.289063 2.37891,1.289063 1.55859,0 2.34375,-1.277344 0.79688,-1.277344 0.79688,-3.785156 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3478" />
+		      <path
+		         d="m 154.23437,20.921875 5.51954,0 0,11.402344 4.27734,0 0,1.675781 -10.71094,0 0,-1.675781 4.27735,0 0,-9.726563 -3.36329,0 0,-1.675781 z m 3.36329,-5.097656 2.15625,0 0,2.71875 -2.15625,0 0,-2.71875 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3480" />
+		      <path
+		         d="m 178.09375,26.359375 0,1.054687 -9.33984,0 0,0.07031 q -0.0937,2.683594 1.01953,3.855469 1.125,1.171875 3.16406,1.171875 1.03125,0 2.15625,-0.328125 1.125,-0.328125 2.40234,-0.996094 l 0,2.144531 q -1.23047,0.503906 -2.3789,0.75 -1.13672,0.257813 -2.20313,0.257813 -3.05859,0 -4.78125,-1.828125 -1.72265,-1.839844 -1.72265,-5.0625 0,-3.140625 1.6875,-5.015625 1.6875,-1.875 4.5,-1.875 2.50781,0 3.94921,1.699218 1.45313,1.699219 1.54688,4.101563 z m -2.15625,-0.632813 q -0.14063,-1.359375 -0.99609,-2.34375 -0.84375,-0.996093 -2.4375,-0.996093 -1.5586,0 -2.56641,1.03125 -1.00781,1.03125 -1.10156,2.320312 l 7.10156,-0.01172 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3482" />
+		      <path
+		         d="m 187.83203,29.253906 q 0,1.453125 0.52734,2.191406 0.53907,0.738282 1.58204,0.738282 l 2.51953,0 0,1.816406 -2.73047,0 q -1.9336,0 -3,-1.230469 -1.05469,-1.242187 -1.05469,-3.515625 l 0,-11.871094 -3.45703,0 0,-1.687499 5.61328,0 0,13.558593 z"
+		         style="font-weight:normal;font-size:24px;font-family:Menlo;text-anchor:middle;fill:#ffffff;stroke:none"
+		         id="path3484" />
+		   </g>
+	  </g>
+	<g id='note-lt-col' style="font-family: Arial,Helvetica; font-size: 12px; fill: #999999;">  
+		<text x="130" y="520" ><tspan style="font-style: italic;">About</tspan>: Heilungsspiel is a virtual <tspan style="font-weight: bold; fill: #04ae64;">Glockenspiel</tspan> that runs</text>
+		<text x="130" y="540">in a web browser. The goal is to provide a way for</text>
+		<text x="130" y="560">patients to work on recovering from temporary losses</text>
+		<text x="130" y="580">in concentration and dexterity. Hence the name. While</text>
+		<text x="130" y="600">Glockenspiel translates literally as "Chime Game," </text>
+		<text x="130" y="620">Heilungsspiel means "Healing Game." </text>
+		<text x="130" y="655">Heilungsspiel is a <tspan style="font-weight: bold; fill: #04ae64;">Triple Data Arts</tspan> project dedicated</text>
+		<text x="130" y="675">with thanks to <tspan style="font-weight: bold; fill: #04ae64;">Dr. BH</tspan>. Thanks also to <tspan style="font-weight: bold; fill: #04ae64;">Johannes</tspan></text>
+		<text x="130" y="695"><tspan style="font-weight: bold; fill: #04ae64;">Hafner</tspan>.</text>
+
+	<g id='note-rt-col' style="font-family: Arial,Helvetica; font-size: 12px; fill: #999999;">
+		<text x='560' y="520"><tspan style="font-style: italic;">Using</tspan>: Just roll the mouse over any of the round</text>
+		<text x='560' y="540">keys to play the corresponding note. Some fairly</text>
+		<text x='560' y="560">easy songs can be found <a xlink:href="http://www.choose-piano-lessons.com/kids-songs.html" target="_blank" style="font-weight: bold; fill: #3399ff;">here</a>.</text>
+		<text x='560' y="595">Click <tspan style="font-weight: bold; fill: #3399ff;" ><a id="display-playing" xlink:href="notes.html" target="_blank" style="font-weight: bold; fill: #3399ff;" onclick="displayNotesPlayed();">Notes</a></tspan> to get the notes from the last song</text>
+		<text x='560' y="615">you played. This can be very helpful for spotting</text>
+		<text x='560' y="635">mistakes or composing your own music. Click</text>
+		<text x='560' y="655"><tspan style="font-weight: bold; fill: #3399ff;" ><a id="clear-the-record" xlink:href="" style="font-weight: bold; fill: #3399ff;" onclick="clearRecord();">Clear</a></tspan> to erase the record of what you played.</text>
+        <text x='560' y="685">Heillungsspiel works in Chrome, Firefox, and</text>
+		<text x='560' y="705">Safari, but not in Internet Explorer, or on mobile</text>
+		<text x='560' y="725">devices.</text>
+	</g>
+		
+	//Normal Keys
+	<g id="normal-notes" onmouseover="evt.target.setAttribute('opacity', '0.7');"
+				onmouseout="evt.target.setAttribute('opacity','1)');">
+		<use xlink:href="#key-1" x="165" y="160" id='key-g1' onmouseover="playFile('g1-1s'); trackNotes('g1');"/>
+		<use xlink:href="#key-1" x="210" y="160" id='key-a1' onmouseover="playFile('a1-1s'); trackNotes('a1');" />
+		<use xlink:href="#key-1" x="255" y="160" id='key-b1' onmouseover="playFile('b1-1s'); trackNotes('b1');"/>
+		<use xlink:href="#key-1" x="300" y="160" id='key-c1' onmouseover="playFile('c1-1s'); trackNotes('c1');"/>
+		<use xlink:href="#key-1" x="345" y="160" id='key-d1' onmouseover="playFile('d1-1s'); trackNotes('d1');"/>
+		<use xlink:href="#key-1" x="390" y="160" id='key-e1' onmouseover="playFile('e1-1s'); trackNotes('e1');"/>
+		<use xlink:href="#key-1" x="435" y="160" id='key-f1' onmouseover="playFile('f1-1s'); trackNotes('f1');"/>
+		<use xlink:href="#key-1" x="480" y="160" id='key-g2' onmouseover="playFile('g2-1s'); trackNotes('g2');"/>
+		<use xlink:href="#key-1" x="525" y="160" id='key-a2' onmouseover="playFile('a2-1s'); trackNotes('a2');"/>
+		<use xlink:href="#key-1" x="570" y="160" id='key-b2' onmouseover="playFile('b2-1s'); trackNotes('b2');"/>
+		<use xlink:href="#key-1" x="615" y="160" id='key-c2' onmouseover="playFile('c2-1s'); trackNotes('c2');"/>
+		<use xlink:href="#key-1" x="660" y="160" id='key-d2' onmouseover="playFile('d2-1s'); trackNotes('d2');"/>
+		<use xlink:href="#key-1" x="705" y="160" id='key-e2' onmouseover="playFile('e2-1s'); trackNotes('e2');"/>
+		<use xlink:href="#key-1" x="750" y="160" id='key-f2' onmouseover="playFile('f2-1s'); trackNotes('f2');"/>
+		<use xlink:href="#key-1" x="795" y="160" id='key-g3' onmouseover="playFile('g3-1s'); trackNotes('g3');"/>
+	</g>
+	
+	//Sharps
+	<g id="sharps" onmouseover="evt.target.setAttribute('opacity', '0.7');"
+				onmouseout="evt.target.setAttribute('opacity','1)');">
+		<use xlink:href="#key-1" x="187.5" y="270" id='key-gs1' onmouseover="playFile('gs1-1s'); trackNotes('gs1');"/>
+		<use xlink:href="#key-1" x="232.5" y="270" id='key-as1' onmouseover="playFile('as1-1s'); trackNotes('as1');"/>
+		<use xlink:href="#key-1" x="322.5" y="270" id='key-cs1' onmouseover="playFile('cs1-1s'); trackNotes('cs1');"/>
+		<use xlink:href="#key-1" x="367.5" y="270" id='key-ds1' onmouseover="playFile('ds1-1s'); trackNotes('ds1');"/>
+		<use xlink:href="#key-1" x="457.5" y="270" id='key-fs1' onmouseover="playFile('fs1-1s'); trackNotes('fs1');"/>
+		<use xlink:href="#key-1" x="502.5" y="270" id='key-gs2' onmouseover="playFile('gs2-1s'); trackNotes('gs2');"/>
+		<use xlink:href="#key-1" x="547.5" y="270" id='key-as2' onmouseover="playFile('as2-1s'); trackNotes('as2');"/>
+		<use xlink:href="#key-1" x="637.5" y="270" id='key-cs2' onmouseover="playFile('cs2-1s'); trackNotes('cs2');"/>
+		<use xlink:href="#key-1" x="682.5" y="270" id='key-ds2' onmouseover="playFile('ds2-1s'); trackNotes('ds2');"/>
+		<use xlink:href="#key-1" x="777.5" y="270" id='key-fs2' onmouseover="playFile('fs2-1s'); trackNotes('fs2');"/>
+	</g>
+
+	//Note Letters
+	<text x="165" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">G</tspan></text>
+	<text x="210" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">A</tspan></text>
+	<text x="255" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">B</tspan></text>
+	<text x="300" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">C</tspan></text>
+	<text x="345" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">D</tspan></text>
+	<text x="390" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">E</tspan></text>
+	<text x="435" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">F</tspan></text>
+	<text x="480" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">G</tspan></text>
+	<text x="525" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">A</tspan></text>
+	<text x="570" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">B</tspan></text>
+	<text x="615" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">C</tspan></text>
+	<text x="660" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">D</tspan></text>
+	<text x="705" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">E</tspan></text>
+	<text x="750" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">F</tspan></text>
+	<text x="795" y="200" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">G</tspan></text>
+
+	//Note Letters for sharps
+	<text x="187.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">G</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+	<text x="232.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">A</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+	
+	<text x="322.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">C</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+	<text x="367.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">D</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+	
+	<text x="457.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">F</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+	<text x="502.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">G</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+	<text x="547.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">A</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+	
+	<text x="637.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">C</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+	<text x="682.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">D</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+
+	<text x="777.5" y="240" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">F</tspan><tspan style="font-size: 12; baseline-shift: super;">#</tspan></text>
+
+	<g id="Sheet-Music" transform="scale(1.1) translate(137.5,325)">
+		<rect x="0" y="0" width="595.44" height="100" fill="#ffffff" stroke="none"/>
+		<polyline class="StaffLines" fill="none" stroke="#000000" stroke-width="0.40" stroke-linejoin="bevel" points="28.3465,63.3465 567.094,63.3465"/>
+		<polyline class="StaffLines" fill="none" stroke="#000000" stroke-width="0.40" stroke-linejoin="bevel" points="28.3465,68.3465 567.094,68.3465"/>
+		<polyline class="StaffLines" fill="none" stroke="#000000" stroke-width="0.40" stroke-linejoin="bevel" points="28.3465,73.3465 567.094,73.3465"/>
+		<polyline class="StaffLines" fill="none" stroke="#000000" stroke-width="0.40" stroke-linejoin="bevel" points="28.3465,78.3465 567.094,78.3465"/>
+		<polyline class="StaffLines" fill="none" stroke="#000000" stroke-width="0.40" stroke-linejoin="bevel" points="28.3465,83.3465 567.094,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linejoin="bevel" points="562.194,63.3465 562.194,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="2.50" stroke-linejoin="bevel" points="565.844,63.3465 565.844,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linejoin="bevel" points="501.742,63.3465 501.742,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linejoin="bevel" points="437.846,63.3465 437.846,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linejoin="bevel" points="373.95,63.3465 373.95,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linejoin="bevel" points="310.055,63.3465 310.055,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linejoin="bevel" points="250.159,63.3465 250.159,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linejoin="bevel" points="190.264,63.3465 190.264,83.3465"/>
+		<polyline class="BarLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linejoin="bevel" points="130.368,63.3465 130.368,83.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="506.642,43.3465 516.585,43.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="506.642,48.3465 516.585,48.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="506.642,53.3465 516.585,53.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="506.642,58.3465 516.585,58.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="471.204,48.3465 481.147,48.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="471.204,53.3465 481.147,53.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="471.204,58.3465 481.147,58.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="442.746,48.3465 452.69,48.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="442.746,53.3465 452.69,53.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="442.746,58.3465 452.69,58.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="407.308,53.3465 417.252,53.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="407.308,58.3465 417.252,58.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="378.85,53.3465 388.794,53.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="378.85,58.3465 388.794,58.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="343.412,58.3465 353.356,58.3465"/>
+		<polyline class="LedgerLine" fill="none" stroke="#000000" stroke-width="0.80" stroke-linecap="square" stroke-linejoin="bevel" points="314.955,58.3465 324.899,58.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="508.467,44.1305 508.467,73.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="473.029,46.6305 473.029,73.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="444.571,49.1305 444.571,73.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="409.133,51.6305 409.133,73.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="380.675,54.1305 380.675,73.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="345.237,56.6305 345.237,73.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="316.78,59.1305 316.78,75.8465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="283.342,61.6305 283.342,78.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="256.884,64.1305 256.884,80.8465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="223.446,66.6305 223.446,83.3465"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="196.989,69.1305 196.989,85.2215"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="163.55,71.6305 163.55,87.0965"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="137.093,74.1305 137.093,88.9715"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="111.958,75.0785 111.958,59.5965"/>
+		<polyline class="Stem" fill="none" stroke="#000000" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="bevel" points="87.5105,77.5785 87.5105,61.4715"/>
+		<path class="Note" fill='#000000' stroke="none" stroke-width="0.65" d="M514.45,42.0379 C514.45,41.8165 514.366,41.6277 514.196,41.4715 C514.027,41.3022 513.832,41.2176 513.61,41.2176 C513.22,41.2176 512.432,41.6082 511.247,42.3894 C510.023,43.1837 509.274,43.7501 509.001,44.0886 C508.858,44.2709 508.786,44.4597 508.786,44.6551 C508.786,44.8764 508.871,45.0652 509.04,45.2215 C509.196,45.3907 509.392,45.4754 509.626,45.4754 C510.004,45.4754 510.798,45.0847 512.009,44.3035 C513.207,43.5222 513.949,42.9558 514.235,42.6043 C514.379,42.435 514.45,42.2462 514.45,42.0379 M513.415,40.5926 C514.535,40.5926 515.095,41.0743 515.095,42.0379 C515.095,42.5066 514.958,43.0535 514.685,43.6785 C514.411,44.2905 514.047,44.7592 513.591,45.0847 C512.588,45.7618 511.332,46.1004 509.821,46.1004 C508.702,46.1004 508.142,45.6186 508.142,44.6551 C508.142,44.2254 508.278,43.685 508.552,43.034 C508.812,42.409 509.177,41.9337 509.646,41.6082 C510.648,40.9311 511.905,40.5926 513.415,40.5926"/>
+		<path class="Note"  fill='#000000' stroke="none" d="M479.012,44.5379 C479.012,44.3165 478.928,44.1277 478.758,43.9715 C478.589,43.8022 478.394,43.7176 478.172,43.7176 C477.782,43.7176 476.994,44.1082 475.809,44.8894 C474.585,45.6837 473.836,46.2501 473.563,46.5886 C473.42,46.7709 473.348,46.9597 473.348,47.1551 C473.348,47.3764 473.433,47.5652 473.602,47.7215 C473.758,47.8907 473.954,47.9754 474.188,47.9754 C474.566,47.9754 475.36,47.5847 476.571,46.8035 C477.769,46.0222 478.511,45.4558 478.797,45.1043 C478.941,44.935 479.012,44.7462 479.012,44.5379 M477.977,43.0926 C479.097,43.0926 479.657,43.5743 479.657,44.5379 C479.657,45.0066 479.52,45.5535 479.247,46.1785 C478.973,46.7905 478.609,47.2592 478.153,47.5847 C477.15,48.2618 475.894,48.6004 474.383,48.6004 C473.264,48.6004 472.704,48.1186 472.704,47.1551 C472.704,46.7254 472.84,46.185 473.114,45.534 C473.374,44.909 473.739,44.4337 474.208,44.1082 C475.21,43.4311 476.467,43.0926 477.977,43.0926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M450.555,47.0379 C450.555,46.8165 450.47,46.6277 450.301,46.4715 C450.131,46.3022 449.936,46.2176 449.715,46.2176 C449.324,46.2176 448.536,46.6082 447.352,47.3894 C446.128,48.1837 445.379,48.7501 445.105,49.0887 C444.962,49.2709 444.891,49.4597 444.891,49.6551 C444.891,49.8764 444.975,50.0652 445.144,50.2215 C445.301,50.3907 445.496,50.4754 445.73,50.4754 C446.108,50.4754 446.902,50.0847 448.113,49.3035 C449.311,48.5222 450.053,47.9558 450.34,47.6043 C450.483,47.435 450.555,47.2462 450.555,47.0379 M449.519,45.5926 C450.639,45.5926 451.199,46.0743 451.199,47.0379 C451.199,47.5066 451.062,48.0535 450.789,48.6785 C450.516,49.2905 450.151,49.7592 449.695,50.0847 C448.693,50.7618 447.436,51.1004 445.926,51.1004 C444.806,51.1004 444.246,50.6186 444.246,49.6551 C444.246,49.2254 444.383,48.685 444.656,48.034 C444.917,47.409 445.281,46.9337 445.75,46.6082 C446.753,45.9311 448.009,45.5926 449.519,45.5926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M415.117,49.5379 C415.117,49.3165 415.032,49.1277 414.863,48.9715 C414.693,48.8022 414.498,48.7176 414.277,48.7176 C413.886,48.7176 413.098,49.1082 411.913,49.8894 C410.689,50.6837 409.941,51.2501 409.667,51.5887 C409.524,51.7709 409.453,51.9597 409.453,52.1551 C409.453,52.3764 409.537,52.5652 409.706,52.7215 C409.863,52.8907 410.058,52.9754 410.292,52.9754 C410.67,52.9754 411.464,52.5847 412.675,51.8035 C413.873,51.0222 414.615,50.4558 414.902,50.1043 C415.045,49.935 415.117,49.7462 415.117,49.5379 M414.081,48.0926 C415.201,48.0926 415.761,48.5743 415.761,49.5379 C415.761,50.0066 415.624,50.5535 415.351,51.1785 C415.078,51.7905 414.713,52.2592 414.257,52.5847 C413.255,53.2618 411.998,53.6004 410.488,53.6004 C409.368,53.6004 408.808,53.1186 408.808,52.1551 C408.808,51.7254 408.945,51.185 409.218,50.534 C409.479,49.909 409.843,49.4337 410.312,49.1082 C411.314,48.4311 412.571,48.0926 414.081,48.0926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M386.659,52.0379 C386.659,51.8165 386.574,51.6277 386.405,51.4715 C386.236,51.3022 386.041,51.2176 385.819,51.2176 C385.429,51.2176 384.641,51.6082 383.456,52.3894 C382.232,53.1837 381.483,53.7501 381.21,54.0887 C381.067,54.2709 380.995,54.4597 380.995,54.6551 C380.995,54.8764 381.08,55.0652 381.249,55.2215 C381.405,55.3907 381.6,55.4754 381.835,55.4754 C382.212,55.4754 383.007,55.0847 384.218,54.3035 C385.416,53.5222 386.158,52.9558 386.444,52.6043 C386.587,52.435 386.659,52.2462 386.659,52.0379 M385.624,50.5926 C386.744,50.5926 387.304,51.0743 387.304,52.0379 C387.304,52.5066 387.167,53.0535 386.893,53.6785 C386.62,54.2905 386.255,54.7592 385.8,55.0847 C384.797,55.7618 383.541,56.1004 382.03,56.1004 C380.91,56.1004 380.35,55.6186 380.35,54.6551 C380.35,54.2254 380.487,53.685 380.761,53.034 C381.021,52.409 381.386,51.9337 381.854,51.6082 C382.857,50.9311 384.113,50.5926 385.624,50.5926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M351.221,54.5379 C351.221,54.3165 351.136,54.1277 350.967,53.9715 C350.798,53.8022 350.602,53.7176 350.381,53.7176 C349.99,53.7176 349.203,54.1082 348.018,54.8894 C346.794,55.6837 346.045,56.2501 345.772,56.5887 C345.629,56.7709 345.557,56.9597 345.557,57.1551 C345.557,57.3764 345.642,57.5652 345.811,57.7215 C345.967,57.8907 346.162,57.9754 346.397,57.9754 C346.774,57.9754 347.569,57.5847 348.78,56.8035 C349.977,56.0222 350.72,55.4558 351.006,55.1043 C351.149,54.935 351.221,54.7462 351.221,54.5379 M350.186,53.0926 C351.306,53.0926 351.865,53.5743 351.865,54.5379 C351.865,55.0066 351.729,55.5535 351.455,56.1785 C351.182,56.7905 350.817,57.2592 350.362,57.5847 C349.359,58.2618 348.102,58.6004 346.592,58.6004 C345.472,58.6004 344.912,58.1186 344.912,57.1551 C344.912,56.7254 345.049,56.185 345.323,55.534 C345.583,54.909 345.948,54.4337 346.416,54.1082 C347.419,53.4311 348.675,53.0926 350.186,53.0926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M322.763,57.0379 C322.763,56.8165 322.679,56.6277 322.509,56.4715 C322.34,56.3022 322.145,56.2176 321.924,56.2176 C321.533,56.2176 320.745,56.6082 319.56,57.3894 C318.336,58.1837 317.588,58.7501 317.314,59.0887 C317.171,59.2709 317.099,59.4598 317.099,59.6551 C317.099,59.8764 317.184,60.0652 317.353,60.2215 C317.509,60.3907 317.705,60.4754 317.939,60.4754 C318.317,60.4754 319.111,60.0848 320.322,59.3035 C321.52,58.5223 322.262,57.9558 322.549,57.6043 C322.692,57.435 322.763,57.2462 322.763,57.0379 M321.728,55.5926 C322.848,55.5926 323.408,56.0743 323.408,57.0379 C323.408,57.5066 323.271,58.0535 322.998,58.6785 C322.724,59.2905 322.36,59.7592 321.904,60.0848 C320.901,60.7618 319.645,61.1004 318.134,61.1004 C317.015,61.1004 316.455,60.6186 316.455,59.6551 C316.455,59.2254 316.591,58.685 316.865,58.034 C317.125,57.409 317.49,56.9337 317.959,56.6082 C318.961,55.9311 320.218,55.5926 321.728,55.5926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M289.325,59.5379 C289.325,59.3165 289.241,59.1277 289.071,58.9715 C288.902,58.8022 288.707,58.7176 288.485,58.7176 C288.095,58.7176 287.307,59.1082 286.122,59.8894 C284.898,60.6837 284.15,61.2501 283.876,61.5887 C283.733,61.7709 283.661,61.9598 283.661,62.1551 C283.661,62.3764 283.746,62.5652 283.915,62.7215 C284.071,62.8907 284.267,62.9754 284.501,62.9754 C284.879,62.9754 285.673,62.5848 286.884,61.8035 C288.082,61.0223 288.824,60.4558 289.11,60.1043 C289.254,59.935 289.325,59.7462 289.325,59.5379 M288.29,58.0926 C289.41,58.0926 289.97,58.5743 289.97,59.5379 C289.97,60.0066 289.833,60.5535 289.56,61.1785 C289.286,61.7905 288.922,62.2592 288.466,62.5848 C287.463,63.2618 286.207,63.6004 284.696,63.6004 C283.577,63.6004 283.017,63.1186 283.017,62.1551 C283.017,61.7254 283.153,61.185 283.427,60.534 C283.687,59.909 284.052,59.4337 284.521,59.1082 C285.523,58.4311 286.78,58.0926 288.29,58.0926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M262.868,62.0379 C262.868,61.8165 262.783,61.6277 262.614,61.4715 C262.445,61.3022 262.249,61.2176 262.028,61.2176 C261.637,61.2176 260.85,61.6082 259.665,62.3894 C258.441,63.1837 257.692,63.7501 257.419,64.0887 C257.275,64.271 257.204,64.4598 257.204,64.6551 C257.204,64.8764 257.288,65.0652 257.458,65.2215 C257.614,65.3907 257.809,65.4754 258.044,65.4754 C258.421,65.4754 259.215,65.0848 260.426,64.3035 C261.624,63.5223 262.366,62.9558 262.653,62.6043 C262.796,62.435 262.868,62.2462 262.868,62.0379 M261.833,60.5926 C262.952,60.5926 263.512,61.0743 263.512,62.0379 C263.512,62.5066 263.376,63.0535 263.102,63.6785 C262.829,64.2905 262.464,64.7592 262.008,65.0848 C261.006,65.7618 259.749,66.1004 258.239,66.1004 C257.119,66.1004 256.559,65.6186 256.559,64.6551 C256.559,64.2254 256.696,63.685 256.969,63.034 C257.23,62.409 257.594,61.9337 258.063,61.6082 C259.066,60.9311 260.322,60.5926 261.833,60.5926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M229.43,64.5379 C229.43,64.3165 229.345,64.1277 229.176,63.9715 C229.007,63.8022 228.811,63.7176 228.59,63.7176 C228.199,63.7176 227.411,64.1082 226.227,64.8894 C225.003,65.6837 224.254,66.2501 223.98,66.5887 C223.837,66.771 223.766,66.9598 223.766,67.1551 C223.766,67.3764 223.85,67.5652 224.02,67.7215 C224.176,67.8907 224.371,67.9754 224.605,67.9754 C224.983,67.9754 225.777,67.5848 226.988,66.8035 C228.186,66.0223 228.928,65.4558 229.215,65.1043 C229.358,64.935 229.43,64.7462 229.43,64.5379 M228.395,63.0926 C229.514,63.0926 230.074,63.5743 230.074,64.5379 C230.074,65.0066 229.938,65.5535 229.664,66.1785 C229.391,66.7905 229.026,67.2592 228.57,67.5848 C227.568,68.2618 226.311,68.6004 224.801,68.6004 C223.681,68.6004 223.121,68.1186 223.121,67.1551 C223.121,66.7254 223.258,66.185 223.531,65.534 C223.792,64.909 224.156,64.4337 224.625,64.1082 C225.628,63.4311 226.884,63.0926 228.395,63.0926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M202.972,67.0379 C202.972,66.8165 202.887,66.6277 202.718,66.4715 C202.549,66.3022 202.354,66.2176 202.132,66.2176 C201.742,66.2176 200.954,66.6082 199.769,67.3894 C198.545,68.1837 197.796,68.7501 197.523,69.0887 C197.38,69.271 197.308,69.4598 197.308,69.6551 C197.308,69.8764 197.393,70.0652 197.562,70.2215 C197.718,70.3907 197.914,70.4754 198.148,70.4754 C198.525,70.4754 199.32,70.0848 200.531,69.3035 C201.729,68.5223 202.471,67.9559 202.757,67.6043 C202.9,67.435 202.972,67.2462 202.972,67.0379 M201.937,65.5926 C203.057,65.5926 203.617,66.0743 203.617,67.0379 C203.617,67.5066 203.48,68.0535 203.206,68.6785 C202.933,69.2905 202.568,69.7592 202.113,70.0848 C201.11,70.7618 199.854,71.1004 198.343,71.1004 C197.223,71.1004 196.664,70.6186 196.664,69.6551 C196.664,69.2254 196.8,68.685 197.074,68.034 C197.334,67.409 197.699,66.9337 198.167,66.6082 C199.17,65.9311 200.427,65.5926 201.937,65.5926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M169.534,69.5379 C169.534,69.3165 169.449,69.1277 169.28,68.9715 C169.111,68.8022 168.916,68.7176 168.694,68.7176 C168.304,68.7176 167.516,69.1082 166.331,69.8894 C165.107,70.6837 164.358,71.2501 164.085,71.5887 C163.942,71.771 163.87,71.9598 163.87,72.1551 C163.87,72.3764 163.955,72.5652 164.124,72.7215 C164.28,72.8907 164.475,72.9754 164.71,72.9754 C165.087,72.9754 165.882,72.5848 167.093,71.8035 C168.291,71.0223 169.033,70.4559 169.319,70.1043 C169.462,69.935 169.534,69.7462 169.534,69.5379 M168.499,68.0926 C169.619,68.0926 170.179,68.5743 170.179,69.5379 C170.179,70.0066 170.042,70.5535 169.768,71.1785 C169.495,71.7905 169.13,72.2592 168.675,72.5848 C167.672,73.2618 166.416,73.6004 164.905,73.6004 C163.785,73.6004 163.225,73.1186 163.225,72.1551 C163.225,71.7254 163.362,71.185 163.636,70.534 C163.896,69.909 164.261,69.4337 164.729,69.1082 C165.732,68.4311 166.988,68.0926 168.499,68.0926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M143.076,72.0379 C143.076,71.8165 142.992,71.6277 142.823,71.4715 C142.653,71.3022 142.458,71.2176 142.237,71.2176 C141.846,71.2176 141.058,71.6082 139.873,72.3894 C138.649,73.1837 137.901,73.7501 137.627,74.0887 C137.484,74.271 137.412,74.4598 137.412,74.6551 C137.412,74.8764 137.497,75.0652 137.666,75.2215 C137.823,75.3907 138.018,75.4754 138.252,75.4754 C138.63,75.4754 139.424,75.0848 140.635,74.3035 C141.833,73.5223 142.575,72.9559 142.862,72.6043 C143.005,72.435 143.076,72.2462 143.076,72.0379 M142.041,70.5926 C143.161,70.5926 143.721,71.0743 143.721,72.0379 C143.721,72.5066 143.584,73.0535 143.311,73.6785 C143.037,74.2905 142.673,74.7592 142.217,75.0848 C141.215,75.7618 139.958,76.1004 138.448,76.1004 C137.328,76.1004 136.768,75.6186 136.768,74.6551 C136.768,74.2254 136.905,73.685 137.178,73.034 C137.438,72.409 137.803,71.9337 138.272,71.6082 C139.274,70.9311 140.531,70.5926 142.041,70.5926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M111.648,74.5379 C111.648,74.3165 111.564,74.1277 111.394,73.9715 C111.225,73.8022 111.03,73.7176 110.808,73.7176 C110.418,73.7176 109.63,74.1082 108.445,74.8894 C107.221,75.6837 106.472,76.2501 106.199,76.5887 C106.056,76.771 105.984,76.9598 105.984,77.1551 C105.984,77.3764 106.069,77.5652 106.238,77.7215 C106.394,77.8908 106.59,77.9754 106.824,77.9754 C107.202,77.9754 107.996,77.5848 109.207,76.8035 C110.405,76.0223 111.147,75.4559 111.433,75.1043 C111.577,74.935 111.648,74.7462 111.648,74.5379 M110.613,73.0926 C111.733,73.0926 112.293,73.5743 112.293,74.5379 C112.293,75.0066 112.156,75.5535 111.883,76.1785 C111.609,76.7905 111.245,77.2592 110.789,77.5848 C109.786,78.2618 108.53,78.6004 107.019,78.6004 C105.9,78.6004 105.34,78.1186 105.34,77.1551 C105.34,76.7254 105.476,76.185 105.75,75.534 C106.01,74.909 106.375,74.4337 106.844,74.1082 C107.846,73.4311 109.103,73.0926 110.613,73.0926"/>
+		<path class="Note" fill='#000000' stroke="none" d="M87.2004,77.0379 C87.2004,76.8165 87.1158,76.6277 86.9465,76.4715 C86.7772,76.3022 86.5819,76.2176 86.3605,76.2176 C85.9699,76.2176 85.1822,76.6082 83.9973,77.3895 C82.7733,78.1837 82.0246,78.7501 81.7512,79.0887 C81.6079,79.271 81.5363,79.4598 81.5363,79.6551 C81.5363,79.8764 81.621,80.0652 81.7902,80.2215 C81.9465,80.3908 82.1418,80.4754 82.3762,80.4754 C82.7538,80.4754 83.548,80.0848 84.759,79.3035 C85.9569,78.5223 86.6991,77.9559 86.9855,77.6043 C87.1288,77.435 87.2004,77.2462 87.2004,77.0379 M86.1652,75.5926 C87.285,75.5926 87.8449,76.0743 87.8449,77.0379 C87.8449,77.5066 87.7082,78.0535 87.4348,78.6785 C87.1613,79.2905 86.7967,79.7592 86.341,80.0848 C85.3384,80.7618 84.0819,81.1004 82.5715,81.1004 C81.4517,81.1004 80.8918,80.6186 80.8918,79.6551 C80.8918,79.2254 81.0285,78.685 81.302,78.034 C81.5624,77.409 81.927,76.9337 82.3957,76.6082 C83.3983,75.9311 84.6548,75.5926 86.1652,75.5926"/>
+		<path class="Clef" fill='#000000' stroke="none" d="M38.8902,73.2293 C38.8902,73.2293 38.9293,73.2293 39.0074,73.2293 C39.0595,73.2163 39.105,73.2098 39.1441,73.2098 C40.6024,73.2098 41.8004,73.7241 42.7379,74.7527 C43.6754,75.7684 44.1441,76.9533 44.1441,78.3074 C44.1441,79.9871 43.4475,81.3543 42.0543,82.409 C41.6897,82.6954 41.2144,82.9298 40.6285,83.1121 C40.6936,83.9585 40.7261,84.6421 40.7261,85.1629 C40.7261,85.2671 40.7131,85.6447 40.6871,86.2957 C40.635,87.5066 40.2183,88.5548 39.4371,89.4402 C38.6819,90.3126 37.7444,90.7488 36.6246,90.7488 C35.5699,90.7488 34.6715,90.3777 33.9293,89.6355 C33.1871,88.8803 32.816,87.9689 32.816,86.9012 C32.816,86.3413 33.0308,85.866 33.4605,85.4754 C33.9032,85.0848 34.4175,84.8895 35.0035,84.8895 C35.5243,84.8895 35.9605,85.0913 36.3121,85.4949 C36.6767,85.8725 36.859,86.3413 36.859,86.9012 C36.859,87.409 36.6767,87.8452 36.3121,88.2098 C35.9475,88.5743 35.5113,88.7566 35.0035,88.7566 C34.7951,88.7566 34.5933,88.7176 34.398,88.6395 C34.9709,89.4858 35.7326,89.909 36.6832,89.909 C37.5816,89.909 38.3173,89.5444 38.8902,88.8152 C39.4892,88.06 39.8147,87.1811 39.8668,86.1785 C39.8928,85.5535 39.9058,85.1954 39.9058,85.1043 C39.9058,84.3751 39.8798,83.7762 39.8277,83.3074 C39.1767,83.4116 38.5972,83.4637 38.0894,83.4637 C36.2795,83.4637 34.7366,82.7475 33.4605,81.3152 C32.2105,79.8699 31.5855,78.1512 31.5855,76.159 C31.5855,75.7423 31.6246,75.3191 31.7027,74.8895 C31.7808,74.5379 31.8785,74.1538 31.9957,73.7371 C32.0608,73.5027 32.2366,73.1251 32.523,72.6043 C32.6272,72.448 32.7444,72.2527 32.8746,72.0184 C33.0048,71.784 33.0959,71.6277 33.148,71.5496 C33.2782,71.2892 33.5321,70.9376 33.9097,70.4949 C34.0139,70.3777 34.1213,70.2475 34.232,70.1043 C34.3427,69.9611 34.4371,69.8439 34.5152,69.7527 C34.5933,69.6616 34.6519,69.59 34.691,69.5379 C34.73,69.4858 35.023,69.1408 35.5699,68.5027 C35.7001,68.3725 35.8271,68.2325 35.9507,68.0828 C36.0744,67.9331 36.1754,67.8159 36.2535,67.7312 C36.3316,67.6466 36.3902,67.5848 36.4293,67.5457 C35.9605,65.9962 35.6675,64.7592 35.5504,63.8348 C35.4592,63.0926 35.4136,62.077 35.4136,60.7879 C35.4136,59.6551 35.6741,58.5939 36.1949,57.6043 C36.7027,56.5756 37.4123,55.7358 38.3238,55.0848 C38.3889,55.0457 38.454,55.0262 38.5191,55.0262 C38.6103,55.0262 38.6754,55.0457 38.7144,55.0848 C39.4175,55.9311 40.023,57.0314 40.5308,58.3855 C41.0517,59.7397 41.3121,60.9702 41.3121,62.077 C41.3121,63.327 41.0126,64.4988 40.4136,65.5926 C39.7366,66.7514 38.8642,67.9493 37.7965,69.1863 C38.0699,70.0457 38.4345,71.3934 38.8902,73.2293 M40.5504,82.3113 C41.2274,82.0639 41.7548,81.6408 42.1324,81.0418 C42.5491,80.4689 42.7574,79.8243 42.7574,79.1082 C42.7574,78.1837 42.4449,77.3634 41.8199,76.6473 C41.1819,75.9051 40.3681,75.4884 39.3785,75.3973 C39.9384,78.1447 40.329,80.4493 40.5504,82.3113 M32.9918,77.7996 C32.9918,79.0887 33.5126,80.2215 34.5543,81.198 C35.622,82.1486 36.8199,82.6238 38.148,82.6238 C38.6949,82.6238 39.2287,82.5848 39.7496,82.5066 C39.5412,80.5275 39.1311,78.1577 38.5191,75.3973 C37.7769,75.4754 37.1845,75.7358 36.7418,76.1785 C36.3121,76.6342 36.0972,77.1486 36.0972,77.7215 C36.0972,78.7111 36.6246,79.5118 37.6793,80.1238 C37.7704,80.215 37.816,80.3126 37.816,80.4168 C37.816,80.521 37.7704,80.6186 37.6793,80.7098 C37.6011,80.8009 37.5035,80.8465 37.3863,80.8465 C37.3733,80.8465 37.3147,80.8335 37.2105,80.8074 C36.4683,80.4038 35.8954,79.8829 35.4918,79.2449 C35.1142,78.5678 34.9254,77.8842 34.9254,77.1941 C34.9254,76.2957 35.2053,75.4819 35.7652,74.7527 C36.3511,74.0236 37.1129,73.5548 38.0504,73.3465 C37.6858,71.8881 37.3863,70.7488 37.1519,69.9285 C36.9436,70.1629 36.6929,70.4461 36.4,70.7781 C36.107,71.1102 35.9345,71.3087 35.8824,71.3738 C35.4136,71.9858 35.0556,72.4611 34.8082,72.7996 C34.3655,73.4116 34.0399,73.9389 33.8316,74.3816 C33.6103,74.8764 33.4149,75.4168 33.2457,76.0027 C33.0764,76.5626 32.9918,77.1616 32.9918,77.7996 M39.5152,57.9363 C38.5386,58.4181 37.7704,59.1082 37.2105,60.0066 C36.6376,60.9311 36.3511,61.9272 36.3511,62.9949 C36.3511,63.9324 36.5855,65.1954 37.0543,66.784 C37.9918,65.6512 38.6949,64.603 39.1636,63.6395 C39.6584,62.6238 39.9058,61.5626 39.9058,60.4559 C39.9058,59.6225 39.7756,58.7827 39.5152,57.9363"/>
+		<path class="KeySig" fill='#000000' stroke="none" d="M70.9504,82.0769 C70.9504,82.3243 70.8267,82.448 70.5793,82.448 C70.3319,82.448 70.2082,82.3243 70.2082,82.0769 L70.2082,79.1863 L68.548,79.8113 L68.548,82.9754 C68.548,83.2228 68.4243,83.3465 68.1769,83.3465 C67.9295,83.3465 67.8058,83.2228 67.8058,82.9754 L67.8058,80.0652 L67.1808,80.2996 C67.1678,80.3126 67.1157,80.3191 67.0246,80.3191 C66.9204,80.3191 66.8293,80.2801 66.7512,80.2019 C66.673,80.1238 66.634,80.0327 66.634,79.9285 L66.634,78.7176 C66.634,78.5223 66.7186,78.3986 66.8879,78.3465 L67.8058,78.034 L67.8058,74.8309 L67.1808,75.0457 C67.1678,75.0587 67.1157,75.0652 67.0246,75.0652 C66.9204,75.0652 66.8293,75.0262 66.7512,74.948 C66.673,74.8699 66.634,74.7788 66.634,74.6746 L66.634,73.4637 C66.634,73.2814 66.7186,73.1642 66.8879,73.1121 L67.8058,72.7605 L67.8058,69.616 C67.8058,69.3686 67.9295,69.2449 68.1769,69.2449 C68.4243,69.2449 68.548,69.3686 68.548,69.616 L68.548,72.5066 L70.2082,71.8816 L70.2082,68.7176 C70.2082,68.4702 70.3319,68.3465 70.5793,68.3465 C70.8267,68.3465 70.9504,68.4702 70.9504,68.7176 L70.9504,71.6277 L71.5949,71.3934 C71.6079,71.3803 71.6535,71.3738 71.7316,71.3738 C71.8228,71.3738 71.9204,71.4129 72.0246,71.491 C72.1027,71.5691 72.1418,71.6603 72.1418,71.7644 L72.1418,72.9754 C72.1418,73.1577 72.0506,73.2814 71.8683,73.3465 L70.9504,73.659 L70.9504,76.8621 L71.5949,76.6473 C71.6079,76.6342 71.6535,76.6277 71.7316,76.6277 C71.8228,76.6277 71.9204,76.6668 72.0246,76.7449 C72.1027,76.823 72.1418,76.9142 72.1418,77.0184 L72.1418,78.2293 C72.1418,78.3986 72.0506,78.5158 71.8683,78.5809 L70.9504,78.9324 L70.9504,82.0769 M70.2082,73.9519 L68.548,74.5379 L68.548,77.741 L70.2082,77.1551 L70.2082,73.9519 "/>
+		<path class="KeySig" fill='#000000' stroke="none" d="M65.9504,74.5769 C65.9504,74.8243 65.8267,74.948 65.5793,74.948 C65.3319,74.948 65.2082,74.8243 65.2082,74.5769 L65.2082,71.6863 L63.548,72.3113 L63.548,75.4754 C63.548,75.7228 63.4243,75.8465 63.1769,75.8465 C62.9295,75.8465 62.8058,75.7228 62.8058,75.4754 L62.8058,72.5652 L62.1808,72.7996 C62.1678,72.8126 62.1157,72.8191 62.0246,72.8191 C61.9204,72.8191 61.8293,72.7801 61.7512,72.7019 C61.673,72.6238 61.634,72.5327 61.634,72.4285 L61.634,71.2176 C61.634,71.0223 61.7186,70.8986 61.8879,70.8465 L62.8058,70.534 L62.8058,67.3309 L62.1808,67.5457 C62.1678,67.5587 62.1157,67.5652 62.0246,67.5652 C61.9204,67.5652 61.8293,67.5262 61.7512,67.448 C61.673,67.3699 61.634,67.2788 61.634,67.1746 L61.634,65.9637 C61.634,65.7814 61.7186,65.6642 61.8879,65.6121 L62.8058,65.2605 L62.8058,62.116 C62.8058,61.8686 62.9295,61.7449 63.1769,61.7449 C63.4243,61.7449 63.548,61.8686 63.548,62.116 L63.548,65.0066 L65.2082,64.3816 L65.2082,61.2176 C65.2082,60.9702 65.3319,60.8465 65.5793,60.8465 C65.8267,60.8465 65.9504,60.9702 65.9504,61.2176 L65.9504,64.1277 L66.5949,63.8934 C66.6079,63.8803 66.6535,63.8738 66.7316,63.8738 C66.8228,63.8738 66.9204,63.9129 67.0246,63.991 C67.1027,64.0691 67.1418,64.1603 67.1418,64.2644 L67.1418,65.4754 C67.1418,65.6577 67.0506,65.7814 66.8683,65.8465 L65.9504,66.159 L65.9504,69.3621 L66.5949,69.1473 C66.6079,69.1342 66.6535,69.1277 66.7316,69.1277 C66.8228,69.1277 66.9204,69.1668 67.0246,69.2449 C67.1027,69.323 67.1418,69.4142 67.1418,69.5184 L67.1418,70.7293 C67.1418,70.8986 67.0506,71.0157 66.8683,71.0809 L65.9504,71.4324 L65.9504,74.5769 M65.2082,66.4519 L63.548,67.0379 L63.548,70.241 L65.2082,69.6551 L65.2082,66.4519 "/>
+		<path class="KeySig" fill='#000000' stroke="none" d="M60.9504,67.0769 C60.9504,67.3243 60.8267,67.448 60.5793,67.448 C60.3319,67.448 60.2082,67.3243 60.2082,67.0769 L60.2082,64.1863 L58.548,64.8113 L58.548,67.9754 C58.548,68.2228 58.4243,68.3465 58.1769,68.3465 C57.9295,68.3465 57.8058,68.2228 57.8058,67.9754 L57.8058,65.0652 L57.1808,65.2996 C57.1678,65.3126 57.1157,65.3191 57.0246,65.3191 C56.9204,65.3191 56.8293,65.2801 56.7512,65.2019 C56.673,65.1238 56.634,65.0327 56.634,64.9285 L56.634,63.7176 C56.634,63.5223 56.7186,63.3986 56.8879,63.3465 L57.8058,63.034 L57.8058,59.8308 L57.1808,60.0457 C57.1678,60.0587 57.1157,60.0652 57.0246,60.0652 C56.9204,60.0652 56.8293,60.0262 56.7512,59.948 C56.673,59.8699 56.634,59.7788 56.634,59.6746 L56.634,58.4637 C56.634,58.2814 56.7186,58.1642 56.8879,58.1121 L57.8058,57.7605 L57.8058,54.616 C57.8058,54.3686 57.9295,54.2449 58.1769,54.2449 C58.4243,54.2449 58.548,54.3686 58.548,54.616 L58.548,57.5066 L60.2082,56.8816 L60.2082,53.7176 C60.2082,53.4702 60.3319,53.3465 60.5793,53.3465 C60.8267,53.3465 60.9504,53.4702 60.9504,53.7176 L60.9504,56.6277 L61.5949,56.3933 C61.6079,56.3803 61.6535,56.3738 61.7316,56.3738 C61.8228,56.3738 61.9204,56.4129 62.0246,56.491 C62.1027,56.5691 62.1418,56.6603 62.1418,56.7644 L62.1418,57.9754 C62.1418,58.1577 62.0506,58.2814 61.8683,58.3465 L60.9504,58.659 L60.9504,61.8621 L61.5949,61.6473 C61.6079,61.6342 61.6535,61.6277 61.7316,61.6277 C61.8228,61.6277 61.9204,61.6668 62.0246,61.7449 C62.1027,61.823 62.1418,61.9142 62.1418,62.0183 L62.1418,63.2293 C62.1418,63.3986 62.0506,63.5157 61.8683,63.5808 L60.9504,63.9324 L60.9504,67.0769 M60.2082,58.9519 L58.548,59.5379 L58.548,62.741 L60.2082,62.1551 L60.2082,58.9519 "/>
+		<path class="KeySig" fill='#000000' stroke="none" d="M55.9504,77.0769 C55.9504,77.3243 55.8267,77.448 55.5793,77.448 C55.3319,77.448 55.2082,77.3243 55.2082,77.0769 L55.2082,74.1863 L53.548,74.8113 L53.548,77.9754 C53.548,78.2228 53.4243,78.3465 53.1769,78.3465 C52.9295,78.3465 52.8058,78.2228 52.8058,77.9754 L52.8058,75.0652 L52.1808,75.2996 C52.1678,75.3126 52.1157,75.3191 52.0246,75.3191 C51.9204,75.3191 51.8293,75.2801 51.7512,75.2019 C51.673,75.1238 51.634,75.0327 51.634,74.9285 L51.634,73.7176 C51.634,73.5223 51.7186,73.3986 51.8879,73.3465 L52.8058,73.034 L52.8058,69.8309 L52.1808,70.0457 C52.1678,70.0587 52.1157,70.0652 52.0246,70.0652 C51.9204,70.0652 51.8293,70.0262 51.7512,69.948 C51.673,69.8699 51.634,69.7788 51.634,69.6746 L51.634,68.4637 C51.634,68.2814 51.7186,68.1642 51.8879,68.1121 L52.8058,67.7605 L52.8058,64.616 C52.8058,64.3686 52.9295,64.2449 53.1769,64.2449 C53.4243,64.2449 53.548,64.3686 53.548,64.616 L53.548,67.5066 L55.2082,66.8816 L55.2082,63.7176 C55.2082,63.4702 55.3319,63.3465 55.5793,63.3465 C55.8267,63.3465 55.9504,63.4702 55.9504,63.7176 L55.9504,66.6277 L56.5949,66.3934 C56.6079,66.3803 56.6535,66.3738 56.7316,66.3738 C56.8228,66.3738 56.9204,66.4129 57.0246,66.491 C57.1027,66.5691 57.1418,66.6603 57.1418,66.7644 L57.1418,67.9754 C57.1418,68.1577 57.0506,68.2814 56.8683,68.3465 L55.9504,68.659 L55.9504,71.8621 L56.5949,71.6473 C56.6079,71.6342 56.6535,71.6277 56.7316,71.6277 C56.8228,71.6277 56.9204,71.6668 57.0246,71.7449 C57.1027,71.823 57.1418,71.9142 57.1418,72.0184 L57.1418,73.2293 C57.1418,73.3986 57.0506,73.5157 56.8683,73.5809 L55.9504,73.9324 L55.9504,77.0769 M55.2082,68.9519 L53.548,69.5379 L53.548,72.741 L55.2082,72.1551 L55.2082,68.9519 "/>
+		<path class="KeySig" fill='#000000' stroke="none" d="M50.9504,69.5769 C50.9504,69.8243 50.8267,69.948 50.5793,69.948 C50.3319,69.948 50.2082,69.8243 50.2082,69.5769 L50.2082,66.6863 L48.548,67.3113 L48.548,70.4754 C48.548,70.7228 48.4243,70.8465 48.1769,70.8465 C47.9295,70.8465 47.8058,70.7228 47.8058,70.4754 L47.8058,67.5652 L47.1808,67.7996 C47.1678,67.8126 47.1157,67.8191 47.0246,67.8191 C46.9204,67.8191 46.8293,67.7801 46.7511,67.7019 C46.673,67.6238 46.634,67.5327 46.634,67.4285 L46.634,66.2176 C46.634,66.0223 46.7186,65.8986 46.8879,65.8465 L47.8058,65.534 L47.8058,62.3308 L47.1808,62.5457 C47.1678,62.5587 47.1157,62.5652 47.0246,62.5652 C46.9204,62.5652 46.8293,62.5262 46.7511,62.448 C46.673,62.3699 46.634,62.2788 46.634,62.1746 L46.634,60.9637 C46.634,60.7814 46.7186,60.6642 46.8879,60.6121 L47.8058,60.2605 L47.8058,57.116 C47.8058,56.8686 47.9295,56.7449 48.1769,56.7449 C48.4243,56.7449 48.548,56.8686 48.548,57.116 L48.548,60.0066 L50.2082,59.3816 L50.2082,56.2176 C50.2082,55.9702 50.3319,55.8465 50.5793,55.8465 C50.8267,55.8465 50.9504,55.9702 50.9504,56.2176 L50.9504,59.1277 L51.5949,58.8933 C51.6079,58.8803 51.6535,58.8738 51.7316,58.8738 C51.8228,58.8738 51.9204,58.9129 52.0246,58.991 C52.1027,59.0691 52.1418,59.1603 52.1418,59.2644 L52.1418,60.4754 C52.1418,60.6577 52.0506,60.7814 51.8683,60.8465 L50.9504,61.159 L50.9504,64.3621 L51.5949,64.1473 C51.6079,64.1342 51.6535,64.1277 51.7316,64.1277 C51.8228,64.1277 51.9204,64.1668 52.0246,64.2449 C52.1027,64.323 52.1418,64.4142 52.1418,64.5183 L52.1418,65.7293 C52.1418,65.8986 52.0506,66.0157 51.8683,66.0808 L50.9504,66.4324 L50.9504,69.5769 M50.2082,61.4519 L48.548,62.0379 L48.548,65.241 L50.2082,64.6551 L50.2082,61.4519 "/>
+		<path class="Rest" fill='#000000' stroke="none" d="M542.363,73.3465 L535.253,73.3465 C535.123,73.3465 535.058,73.2814 535.058,73.1512 L535.058,70.4168 C535.058,70.2866 535.123,70.2215 535.253,70.2215 L542.363,70.2215 C542.493,70.2215 542.558,70.2866 542.558,70.4168 L542.558,73.1512 C542.558,73.2814 542.493,73.3465 542.363,73.3465"/>	
+		<text x="87" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">G</tspan></text>
+		<text x="112" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">A</tspan></text>
+		<text x="140" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">B</tspan></text>
+		<text x="167" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">C</tspan></text>
+		<text x="201" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">D</tspan></text>
+		<text x="226" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">E</tspan></text>
+		<text x="260" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">F</tspan></text>
+		<text x="286" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">G</tspan></text>
+		<text x="320" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">A</tspan></text>
+		<text x="348" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">B</tspan></text>
+		<text x="384" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">C</tspan></text>
+		<text x="412" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">D</tspan></text>
+		<text x="448" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">E</tspan></text>
+		<text x="475" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">F</tspan></text>
+		<text x="511" y="30" style="font-family: Arial,Helvetica; font-size: 16px; fill: #000000; stroke: #000000; stroke-width=1;"><tspan style="font-style: bold; text-anchor: middle">G</tspan></text>
+	<g>	
+  </svg>
+</body>
+</html>
